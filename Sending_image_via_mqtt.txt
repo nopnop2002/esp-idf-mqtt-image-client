@@ -1,0 +1,244 @@
+How this project works.
+
+$ mosquitto_pub -h broker.hivemq.com -p 1883 -t "testtopic/electron/esp32.jpeg" -f esp32.jpeg
+
+You can publish the JPEG image file using mosquitto_pub.
+The image file is divided into multiple packets and arrives at the ESP32 as shown below.
+Topic is attached only to the first packet.
+JPEG can be identified by 2 bytes of the first packet.
+Merge the divided packets into one.
+The merged data will have the same content as the source image file.
+Encode the merged data to BASE64.
+Send the encoded string from ESP32 to the Java script using WebSocket.
+The Java script puts the encoded string in the browser.
+The encoded string will be displayed in the browser as an image.
+
+char markerJPEG[] = {0xFF, 0xD8};
+
+I (25470) MQTT: MQTT_EVENT_DATA
+I (25470) MQTT: event->topic_len=29 event->data_len=1000
+I (25470) MQTT: TOPIC=[testtopic/electron/esp32.jpeg]
+I (25470) MQTT: 0x3fcae29c   ff d8 ff e0 00 10 4a 46  49 46                    |......JFIF|
+I (25480) MQTT: MQTT_EVENT_DATA
+I (25480) MQTT: event->topic_len=0 event->data_len=1024
+I (25490) MQTT: TOPIC=[]
+I (25490) MQTT: 0x3fcae284   f0 84 7a 3d c7 c4 4f 89  5a ac                    |..z=..O.Z.|
+I (25500) MQTT: MQTT_EVENT_DATA
+I (25500) MQTT: event->topic_len=0 event->data_len=1024
+I (25510) MQTT: TOPIC=[]
+I (25510) MQTT: 0x3fcae284   12 97 8b 64 97 00 23 79  d2 c1                    |...d..#y..|
+I (25520) MQTT: MQTT_EVENT_DATA
+I (25530) MQTT: event->topic_len=0 event->data_len=1024
+I (25530) MQTT: TOPIC=[]
+I (25540) MQTT: 0x3fcae284   45 39 10 b3 e2 36 6f ec  71 fb                    |E9...6o.q.|
+I (25540) MQTT: MQTT_EVENT_DATA
+I (25550) MQTT: event->topic_len=0 event->data_len=1024
+I (25550) MQTT: TOPIC=[]
+I (25560) MQTT: 0x3fcae284   9a 1b 2b 66 f1 1e 99 f1  27 58                    |..+f....'X|
+I (25570) MQTT: MQTT_EVENT_DATA
+I (25570) MQTT: event->topic_len=0 event->data_len=1024
+I (25580) MQTT: TOPIC=[]
+I (25580) MQTT: 0x3fcae284   c5 fe 01 7e dd be 0f f8  cf 1d                    |...~......|
+I (25590) MQTT: MQTT_EVENT_DATA
+I (25590) MQTT: event->topic_len=0 event->data_len=1024
+I (25600) MQTT: TOPIC=[]
+I (25600) MQTT: 0x3fcae284   d8 3b fe 09 e7 e1 5f d8  cb c0                    |.;...._...|
+I (25610) MQTT: MQTT_EVENT_DATA
+I (25610) MQTT: event->topic_len=0 event->data_len=1024
+I (25620) MQTT: TOPIC=[]
+I (25620) MQTT: 0x3fcae284   8b 51 b6 f3 23 97 ec d7  08 08                    |.Q..#.....|
+I (25630) MQTT: MQTT_EVENT_DATA
+I (25640) MQTT: event->topic_len=0 event->data_len=1024
+I (25640) MQTT: TOPIC=[]
+I (25640) MQTT: 0x3fcae284   77 c4 4d 73 e2 57 88 a6  f8 9b                    |w.Ms.W....|
+I (25660) MQTT: MQTT_EVENT_DATA
+I (25660) MQTT: event->topic_len=0 event->data_len=1024
+I (25660) MQTT: TOPIC=[]
+I (25670) MQTT: 0x3fcae284   db a3 f8 50 e9 22 d6 e2  39 ae                    |...P."..9.|
+I (25680) MQTT: MQTT_EVENT_DATA
+I (25680) MQTT: event->topic_len=0 event->data_len=1024
+I (25690) MQTT: TOPIC=[]
+I (25690) MQTT: 0x3fcae284   57 33 69 c4 f9 92 5b c9  1c 31                    |W3i...[..1|
+I (25700) MQTT: MQTT_EVENT_DATA
+I (25700) MQTT: event->topic_len=0 event->data_len=1024
+I (25710) MQTT: TOPIC=[]
+I (25710) MQTT: 0x3fcae284   01 7f 66 19 fe 1c 78 93  c2 7e                    |..f...x..~|
+I (25720) MQTT: MQTT_EVENT_DATA
+I (25720) MQTT: event->topic_len=0 event->data_len=1024
+I (25730) MQTT: TOPIC=[]
+I (25730) MQTT: 0x3fcae284   67 c5 9a 7f 88 7c 2f e2  7d 43                    |g....|/.}C|
+I (25740) MQTT: MQTT_EVENT_DATA
+I (25750) MQTT: event->topic_len=0 event->data_len=1024
+I (25750) MQTT: TOPIC=[]
+I (25750) MQTT: 0x3fcae284   bf d3 25 82 e4 29 13 19  3e 46                    |..%..)..>F|
+I (25760) MQTT: MQTT_EVENT_DATA
+I (25770) MQTT: event->topic_len=0 event->data_len=1024
+I (25770) MQTT: TOPIC=[]
+I (25780) MQTT: 0x3fcae284   eb 5a 2c 76 5a 47 87 ff  00 b4                    |.Z,vZG....|
+I (25790) MQTT: MQTT_EVENT_DATA
+I (25790) MQTT: event->topic_len=0 event->data_len=1024
+I (25800) MQTT: TOPIC=[]
+I (25800) MQTT: 0x3fcae284   df c2 4f d9 3b c1 7f b1  4f 84                    |..O.;...O.|
+I (25810) MQTT: MQTT_EVENT_DATA
+I (25810) MQTT: event->topic_len=0 event->data_len=1024
+I (25820) MQTT: TOPIC=[]
+I (25820) MQTT: 0x3fcae284   1e 36 8a d3 50 9a ea 7b  36 d4                    |.6..P..{6.|
+I (25830) MQTT: MQTT_EVENT_DATA
+I (25830) MQTT: event->topic_len=0 event->data_len=1024
+I (25840) MQTT: TOPIC=[]
+I (25840) MQTT: 0x3fcae284   91 4c 8f 27 97 bd 0d 8c  32 33                    |.L.'....23|
+I (25850) MQTT: MQTT_EVENT_DATA
+I (25860) MQTT: event->topic_len=0 event->data_len=345
+I (25860) MQTT: TOPIC=[]
+I (25860) MQTT: 0x3fcae284   b4 96 ba ad bd e2 2c df  da eb                    |......,...|
+
+
+
+
+
+$ mosquitto_pub -h broker.hivemq.com -p 1883 -t "testtopic/electron/esp_logo.png" -f esp_logo.png
+
+You can publish the PNG image file using mosquitto_pub.
+The image file is divided into multiple packets and arrives at the ESP32 as shown below.
+Topic is attached only to the first packet.
+PNG can be identified by 8 bytes of the first packet.
+
+
+char markerPNG[] = {0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A};
+
+I (109840) MQTT: MQTT_EVENT_DATA
+I (109840) MQTT: event->topic_len=31 event->data_len=1000
+I (109840) MQTT: TOPIC=[testtopic/electron/esp_logo.png]
+I (109850) MQTT: 0x3fcae29c   89 50 4e 47 0d 0a 1a 0a  00 00                    |.PNG......|
+I (109860) MQTT: MQTT_EVENT_DATA
+I (109860) MQTT: event->topic_len=0 event->data_len=1024
+I (109870) MQTT: TOPIC=[]
+I (109870) MQTT: 0x3fcae284   0b 9d de 4e 38 f3 dd d2  df ce                    |...N8.....|
+I (109880) MQTT: MQTT_EVENT_DATA
+I (109880) MQTT: event->topic_len=0 event->data_len=1024
+I (109890) MQTT: TOPIC=[]
+I (109890) MQTT: 0x3fcae284   b5 9c 72 91 56 a2 79 e1  7c ac                    |..r.V.y.|.|
+I (109900) MQTT: MQTT_EVENT_DATA
+I (109910) MQTT: event->topic_len=0 event->data_len=1024
+I (109910) MQTT: TOPIC=[]
+I (109920) MQTT: 0x3fcae284   a5 07 1d 0a 67 4e ae f2  4e 69                    |....gN..Ni|
+I (109930) MQTT: MQTT_EVENT_DATA
+I (109930) MQTT: event->topic_len=0 event->data_len=1024
+I (109930) MQTT: TOPIC=[]
+I (109940) MQTT: 0x3fcae284   d0 4a aa 4f e8 49 12 fa  ad d6                    |.J.O.I....|
+I (109950) MQTT: MQTT_EVENT_DATA
+I (109950) MQTT: event->topic_len=0 event->data_len=1024
+I (109960) MQTT: TOPIC=[]
+I (109960) MQTT: 0x3fcae284   51 79 fe a5 d2 37 ae d6  ae 8f                    |Qy...7....|
+I (109970) MQTT: MQTT_EVENT_DATA
+I (109970) MQTT: event->topic_len=0 event->data_len=1024
+I (109980) MQTT: TOPIC=[]
+I (109980) MQTT: 0x3fcae284   fe 53 eb 16 77 39 14 a4  72 4a                    |.S..w9..rJ|
+I (109990) MQTT: MQTT_EVENT_DATA
+I (109990) MQTT: event->topic_len=0 event->data_len=1024
+I (110000) MQTT: TOPIC=[]
+I (110000) MQTT: 0x3fcae284   b7 bf 20 f9 06 6c 22 d4  da 82                    |.. ..l"...|
+I (110010) MQTT: MQTT_EVENT_DATA
+I (110020) MQTT: event->topic_len=0 event->data_len=1024
+I (110020) MQTT: TOPIC=[]
+I (110030) MQTT: 0x3fcae284   a0 4e c8 73 41 31 7a e7  88 51                    |.N.sA1z..Q|
+I (110040) MQTT: MQTT_EVENT_DATA
+I (110040) MQTT: event->topic_len=0 event->data_len=1024
+I (110050) MQTT: TOPIC=[]
+I (110050) MQTT: 0x3fcae284   de 81 29 cf bf 86 71 f7  3e a9                    |..)...q.>.|
+I (110060) MQTT: MQTT_EVENT_DATA
+I (110060) MQTT: event->topic_len=0 event->data_len=1024
+I (110070) MQTT: TOPIC=[]
+I (110070) MQTT: 0x3fcae284   f0 11 c8 db 71 37 3d 20  8d e3                    |....q7= ..|
+I (110080) MQTT: MQTT_EVENT_DATA
+I (110080) MQTT: event->topic_len=0 event->data_len=1024
+I (110090) MQTT: TOPIC=[]
+I (110090) MQTT: 0x3fcae284   2c 85 49 a3 c7 50 03 24  2f c5                    |,.I..P.$/.|
+I (110100) MQTT: MQTT_EVENT_DATA
+I (110110) MQTT: event->topic_len=0 event->data_len=1024
+I (110110) MQTT: TOPIC=[]
+I (110120) MQTT: 0x3fcae284   0a 0a 91 2d ae 9d 86 e9  df 34                    |...-.....4|
+I (110130) MQTT: MQTT_EVENT_DATA
+I (110130) MQTT: event->topic_len=0 event->data_len=1024
+I (110130) MQTT: TOPIC=[]
+I (110140) MQTT: 0x3fcae284   0a 3e 97 c0 72 93 ea 84  1d ad                    |.>..r.....|
+I (110150) MQTT: MQTT_EVENT_DATA
+I (110150) MQTT: event->topic_len=0 event->data_len=1024
+I (110160) MQTT: TOPIC=[]
+I (110160) MQTT: 0x3fcae284   69 f6 84 b7 a6 71 99 9f  91 bf                    |i....q....|
+I (110170) MQTT: MQTT_EVENT_DATA
+I (110170) MQTT: event->topic_len=0 event->data_len=1024
+I (110180) MQTT: TOPIC=[]
+I (110180) MQTT: 0x3fcae284   80 a1 e7 5f 82 a1 d2 9a  0c bd                    |..._......|
+I (110190) MQTT: MQTT_EVENT_DATA
+I (110200) MQTT: event->topic_len=0 event->data_len=1024
+I (110200) MQTT: TOPIC=[]
+I (110210) MQTT: 0x3fcae284   ef a8 90 e7 d5 e0 98 0e  2f d2                    |......../.|
+I (110220) MQTT: MQTT_EVENT_DATA
+I (110220) MQTT: event->topic_len=0 event->data_len=1024
+I (110220) MQTT: TOPIC=[]
+I (110230) MQTT: 0x3fcae284   06 55 e0 f8 c2 fe 09 40  ca 46                    |.U.....@.F|
+I (110240) MQTT: MQTT_EVENT_DATA
+I (110240) MQTT: event->topic_len=0 event->data_len=1024
+I (110250) MQTT: TOPIC=[]
+I (110250) MQTT: 0x3fcae284   18 7f df e3 c8 de 61 37  f8 ea                    |......a7..|
+I (110260) MQTT: MQTT_EVENT_DATA
+I (110260) MQTT: event->topic_len=0 event->data_len=1024
+I (110270) MQTT: TOPIC=[]
+I (110270) MQTT: 0x3fcae284   f5 eb cb 91 64 58 8d 47  e6 e0                    |....dX.G..|
+I (110280) MQTT: MQTT_EVENT_DATA
+I (110280) MQTT: event->topic_len=0 event->data_len=1024
+I (110290) MQTT: TOPIC=[]
+I (110290) MQTT: 0x3fcae284   5b 58 f8 db 5f c1 ed 31  37 9e                    |[X.._..17.|
+I (110300) MQTT: MQTT_EVENT_DATA
+I (110310) MQTT: event->topic_len=0 event->data_len=1024
+I (110310) MQTT: TOPIC=[]
+I (110320) MQTT: 0x3fcae284   9e e4 23 b7 9b 3e 7e 17  0b 7f                    |..#..>~...|
+I (110330) MQTT: MQTT_EVENT_DATA
+I (110330) MQTT: event->topic_len=0 event->data_len=1024
+I (110340) MQTT: TOPIC=[]
+I (110340) MQTT: 0x3fcae284   05 bd a6 1c 73 26 4f 45  06 cf                    |....s&OE..|
+I (110350) MQTT: MQTT_EVENT_DATA
+I (110350) MQTT: event->topic_len=0 event->data_len=1024
+I (110360) MQTT: TOPIC=[]
+I (110360) MQTT: 0x3fcae284   78 39 6b 85 ea f3 a1 7d  c1 3c                    |x9k....}.<|
+I (110370) MQTT: MQTT_EVENT_DATA
+I (110370) MQTT: event->topic_len=0 event->data_len=1024
+I (110380) MQTT: TOPIC=[]
+I (110380) MQTT: 0x3fcae284   4c 94 56 2a dc 8e ea d4  9d 90                    |L.V*......|
+I (110390) MQTT: MQTT_EVENT_DATA
+I (110400) MQTT: event->topic_len=0 event->data_len=1024
+I (110400) MQTT: TOPIC=[]
+I (110410) MQTT: 0x3fcae284   49 40 86 c7 ad e1 e1 0c  fa 39                    |I@.......9|
+I (110420) MQTT: MQTT_EVENT_DATA
+I (110420) MQTT: event->topic_len=0 event->data_len=1024
+I (110420) MQTT: TOPIC=[]
+I (110430) MQTT: 0x3fcae284   d0 d9 5f cc 2f 1e 6d 91  50 9e                    |.._./.m.P.|
+I (110440) MQTT: MQTT_EVENT_DATA
+I (110440) MQTT: event->topic_len=0 event->data_len=1024
+I (110450) MQTT: TOPIC=[]
+I (110450) MQTT: 0x3fcae284   5f fb e0 ed 58 f1 d7 fb  8c 1b                    |_...X.....|
+I (110460) MQTT: MQTT_EVENT_DATA
+I (110460) MQTT: event->topic_len=0 event->data_len=1024
+I (110470) MQTT: TOPIC=[]
+I (110470) MQTT: 0x3fcae284   13 38 72 84 56 45 0a 14  57 79                    |.8r.VE..Wy|
+I (110480) MQTT: MQTT_EVENT_DATA
+I (110490) MQTT: event->topic_len=0 event->data_len=1024
+I (110490) MQTT: TOPIC=[]
+I (110500) MQTT: 0x3fcae284   cf ca 07 17 29 64 57 54  60 db                    |....)dWT`.|
+I (110510) MQTT: MQTT_EVENT_DATA
+I (110510) MQTT: event->topic_len=0 event->data_len=1024
+I (110510) MQTT: TOPIC=[]
+I (110520) MQTT: 0x3fcae284   49 53 d3 67 ba 91 bf fd  01 04                    |IS.g......|
+I (110530) MQTT: MQTT_EVENT_DATA
+I (110530) MQTT: event->topic_len=0 event->data_len=1024
+I (110540) MQTT: TOPIC=[]
+I (110540) MQTT: 0x3fcae284   90 b7 c5 36 e2 f6 57 1a  23 e5                    |...6..W.#.|
+I (110550) MQTT: MQTT_EVENT_DATA
+I (110550) MQTT: event->topic_len=0 event->data_len=1024
+I (110560) MQTT: TOPIC=[]
+I (110560) MQTT: 0x3fcae284   c1 53 04 39 ad 53 f7 81  92 4b                    |.S.9.S...K|
+I (110570) MQTT: MQTT_EVENT_DATA
+I (110570) MQTT: event->topic_len=0 event->data_len=444
+I (110580) MQTT: TOPIC=[]
+I (110580) MQTT: 0x3fcae284   88 be ac 80 21 fa 3d 6d  b4 09                    |....!.=m..|
