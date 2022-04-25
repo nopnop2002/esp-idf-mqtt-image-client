@@ -48,3 +48,7 @@ mosquitto_pub -h broker.hivemq.com -p 1883 -t "testtopic/electron/esp_logo.png" 
 
 # How this project work   
 Read Sending_image_via_mqtt.txt.   
+
+
+# Reference
+https://github.com/nopnop2002/esp-idf-mqtt-client
