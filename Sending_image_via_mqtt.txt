@@ -11,8 +11,10 @@ The merged data will have the same content as the source image file.
 Encode the merged data to BASE64.
 Send the encoded string from ESP32 to the Java script using WebSocket.
 The Java script puts the encoded string in the browser as Data URI Scheme.
+Data URI Scheme will be displayed in the browser as an image.
+
+Data URI Scheme:
 <img src="data:image/png;base64,iVBORw0KGgoAAAANSU ... 5ErkJggg==" alt="Bear" width="200">
-The encoded string will be displayed in the browser as an image.
 
 char markerJPEG[] = {0xFF, 0xD8};
 
