@@ -8,6 +8,7 @@
 */
 
 #include <stdio.h>
+#include <inttypes.h>
 #include <string.h>
 #include <sys/unistd.h>
 #include <sys/stat.h>
@@ -51,7 +52,10 @@ static void clearSPIFFS(char * path) {
 		if (!pe) break;
 		ESP_LOGI(TAG, "d_name=%s d_ino=%d d_type=%x", pe->d_name,pe->d_ino, pe->d_type);
 		char fullPath[64];
-		sprintf(fullPath, "%s/%s", path, pe->d_name);
+		//sprintf(fullPath, "%s/%s", path, pe->d_name);
+		strcpy(fullPath, path);
+		strcat(fullPath, "/");
+		strcat(fullPath, pe->d_name);
 		ESP_LOGI(TAG, "clearSPIFFS fullPath=[%s]", fullPath);
 		unlink(fullPath);
 	}
@@ -136,7 +140,7 @@ void converte(void *pvParameters)
 					strcpy(imageType, "image/jpeg");
 					//strcpy(imageFileName, "/spiffs/image.jpeg");
 					//sprintf(imageFileName, "/root/image%d.jpeg",xTaskGetTickCount());
-					sprintf(imageFileName, "%s/image%d.jpeg", MOUNT_POINT, xTaskGetTickCount());
+					sprintf(imageFileName, "%s/image%"PRIu32".jpeg", MOUNT_POINT, xTaskGetTickCount());
 					//file = fopen("/spiffs/image.jpeg", "wb");
 					file = fopen(imageFileName, "wb");
 					if (file == NULL) {
@@ -151,7 +155,7 @@ void converte(void *pvParameters)
 					strcpy(imageType, "image/png");
 					//strcpy(imageFileName, "/spiffs/image.png");
 					//sprintf(imageFileName, "/spiffs/image%d.png",xTaskGetTickCount());
-					sprintf(imageFileName, "%s/image%d.png", MOUNT_POINT, xTaskGetTickCount());
+					sprintf(imageFileName, "%s/image%"PRIu32".png", MOUNT_POINT, xTaskGetTickCount());
 					//file = fopen("/spiffs/image.png", "wb");
 					file = fopen(imageFileName, "wb");
 					if (file == NULL) {
@@ -188,7 +192,7 @@ void converte(void *pvParameters)
 						ESP_LOGI(TAG, "total_data_len match. start convert to base64");
 						listSPIFFS(MOUNT_POINT);
 						int32_t base64Size = calcBase64EncodedSize(st.st_size);
-						ESP_LOGI(TAG, "base64Size=%d", base64Size);
+						ESP_LOGI(TAG, "base64Size=%"PRIi32, base64Size);
 
 						// Convert from JPEG to BASE64
 						unsigned char*	img_src_buffer = NULL;
@@ -208,7 +212,7 @@ void converte(void *pvParameters)
 		
 						// Save base64 file
 						// Sometimes file creation fails. So i'll retry.
-						sprintf(base64FileName, "%s/base64%d.txt", MOUNT_POINT, xTaskGetTickCount());
+						sprintf(base64FileName, "%s/base64%"PRIu32".txt", MOUNT_POINT, xTaskGetTickCount());
 						while(1) {
 							file = fopen(base64FileName, "wb");
 							if (file == NULL) {

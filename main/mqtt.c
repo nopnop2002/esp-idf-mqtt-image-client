@@ -8,9 +8,11 @@
 */
 
 #include <stdio.h>
+#include <inttypes.h>
 #include <stdint.h>
 #include <stddef.h>
 #include <string.h>
+
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "freertos/event_groups.h"
@@ -44,10 +46,16 @@ static void log_error_if_nonzero(const char *message, int error_code)
 	}
 }
 
+#if ESP_IDF_VERSION >= ESP_IDF_VERSION_VAL(5, 0, 0)
+static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_t event_id, void *event_data)
+#else
 static esp_err_t mqtt_event_handler(esp_mqtt_event_handle_t event)
+#endif
 {
+#if ESP_IDF_VERSION >= ESP_IDF_VERSION_VAL(5, 0, 0)
+	esp_mqtt_event_handle_t event = event_data;
+#endif
 	static int sequence = 0;
-	// your_context_t *context = event->context;
 	switch (event->event_id) {
 		case MQTT_EVENT_CONNECTED:
 			ESP_LOGI(TAG, "MQTT_EVENT_CONNECTED");
@@ -147,7 +155,9 @@ static esp_err_t mqtt_event_handler(esp_mqtt_event_handle_t event)
 			ESP_LOGI(TAG, "Other event id:%d", event->event_id);
 			break;
 	}
+#if ESP_IDF_VERSION < ESP_IDF_VERSION_VAL(5, 0, 0)
 	return ESP_OK;
+#endif
 }
 
 char *JSON_Types(int type) {
@@ -247,7 +257,7 @@ void mqtt(void *pvParameters)
 				//esp_mqtt_client_stop(mqtt_client);
 				esp_mqtt_client_disconnect(mqtt_client);
 				EventBits_t uxBits = xEventGroupWaitBits(status_event_group, MQTT_DISCONNECTED_BIT | MQTT_ERROR_BIT, true, false, portMAX_DELAY);
-				ESP_LOGI(TAG, "xEventGroupWaitBits uxBits=0x%x", uxBits);
+				ESP_LOGI(TAG, "xEventGroupWaitBits uxBits=0x%"PRIx32, uxBits);
 				if( ( uxBits & MQTT_DISCONNECTED_BIT ) != 0 ) {
 					ESP_LOGI(TAG, "Disconnect Success");
 					esp_mqtt_client_stop(mqtt_client);
@@ -298,7 +308,20 @@ void mqtt(void *pvParameters)
 				uint32_t port = strtol( textBuf.port, NULL, 10 );
 				char url[64];
 				sprintf(url,"mqtt://%s", textBuf.host);
-				ESP_LOGI(TAG, "url=[%s] port=%d", url, port);
+				ESP_LOGI(TAG, "url=[%s] port=%"PRIu32, url, port);
+#if ESP_IDF_VERSION >= ESP_IDF_VERSION_VAL(5, 0, 0)
+				esp_mqtt_client_config_t mqtt_cfg = {
+					.broker.address.uri = url,
+					.broker.address.port = port,
+					.credentials.client_id = textBuf.clientId,
+				};
+				if (strlen(textBuf.username) > 0) {
+					mqtt_cfg.credentials.username = textBuf.username;
+				}
+				if (strlen(textBuf.password) > 0) {
+					mqtt_cfg.credentials.authentication.password = textBuf.password;
+				}
+#else
 				esp_mqtt_client_config_t mqtt_cfg = {
 					.uri = url,
 					.port = port,
@@ -311,11 +334,17 @@ void mqtt(void *pvParameters)
 				if (strlen(textBuf.password) > 0) {
 					mqtt_cfg.password = textBuf.password;
 				}
+#endif
 
 				mqtt_client = esp_mqtt_client_init(&mqtt_cfg);
+
+#if ESP_IDF_VERSION >= ESP_IDF_VERSION_VAL(5, 0, 0)
+				esp_mqtt_client_register_event(mqtt_client, ESP_EVENT_ANY_ID, mqtt_event_handler, NULL);
+#endif
+
 				esp_mqtt_client_start(mqtt_client);
 				EventBits_t uxBits = xEventGroupWaitBits(status_event_group, MQTT_CONNECTED_BIT | MQTT_ERROR_BIT, true, false, portMAX_DELAY);
-				ESP_LOGI(TAG, "xEventGroupWaitBits uxBits=0x%x", uxBits);
+				ESP_LOGI(TAG, "xEventGroupWaitBits uxBits=0x%"PRIx32, uxBits);
 
 				cJSON *response;
 				response = cJSON_CreateObject();
@@ -345,7 +374,7 @@ void mqtt(void *pvParameters)
 				//esp_mqtt_client_stop(mqtt_client);
 				esp_mqtt_client_disconnect(mqtt_client);
 				EventBits_t uxBits = xEventGroupWaitBits(status_event_group, MQTT_DISCONNECTED_BIT | MQTT_ERROR_BIT, true, false, portMAX_DELAY);
-				ESP_LOGI(TAG, "xEventGroupWaitBits uxBits=0x%x", uxBits);
+				ESP_LOGI(TAG, "xEventGroupWaitBits uxBits=0x%"PRIx32, uxBits);
 
 				cJSON *response;
 				response = cJSON_CreateObject();

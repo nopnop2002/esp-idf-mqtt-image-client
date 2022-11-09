@@ -6,7 +6,10 @@
 	 CONDITIONS OF ANY KIND, either express or implied.
 */
 
-#include "string.h"
+#include <stdio.h>
+#include <inttypes.h>
+#include <string.h>
+
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "freertos/queue.h"
@@ -214,10 +217,10 @@ void websocket_callback(uint8_t num,WEBSOCKET_TYPE_t type,char* msg,uint64_t len
 			}
 			break;
 		case WEBSOCKET_BIN:
-			ESP_LOGI(TAG,"client %i sent binary message of size %i:\n%s",num,(uint32_t)len,msg);
+			ESP_LOGI(TAG,"client %i sent binary message of size %"PRIu32":\n%s",num,(uint32_t)len,msg);
 			break;
 		case WEBSOCKET_PING:
-			ESP_LOGI(TAG,"client %i pinged us with message of size %i:\n%s",num,(uint32_t)len,msg);
+			ESP_LOGI(TAG,"client %i pinged us with message of size %"PRIu32":\n%s",num,(uint32_t)len,msg);
 			break;
 		case WEBSOCKET_PONG:
 			ESP_LOGI(TAG,"client %i responded to the ping",num);
@@ -649,7 +652,7 @@ void app_main() {
 				char* base64_buffer = NULL;
 				base64_buffer = malloc(st.st_size);
 				if (base64_buffer == NULL) {
-					ESP_LOGE(TAG, "malloc fail. base64_buffer_len %d", st.st_size);
+					ESP_LOGE(TAG, "malloc fail. base64_buffer_len %ld", st.st_size);
 					continue;
 				}
 				file = fopen(imagefile, "rb");
@@ -660,7 +663,7 @@ void app_main() {
 
 				char out[1024];
 				char fsize[16];
-				sprintf(fsize, "%d", st.st_size);
+				sprintf(fsize, "%ld", st.st_size);
 				int len;
 				len = makeSendText(out, "TOPIC", topic, fsize, imagetype);
 				ws_server_send_text_all(out,len);
@@ -670,7 +673,7 @@ void app_main() {
 				while(1) {
 					int imageLen = st.st_size - imageIndex;
 					if (imageLen > 1000) imageLen = 1000;
-					ESP_LOGD(TAG, "st.st_size=%d imageIndex=%d imageLen=%d", st.st_size, imageIndex, imageLen);
+					ESP_LOGD(TAG, "st.st_size=%ld imageIndex=%d imageLen=%d", st.st_size, imageIndex, imageLen);
 					sprintf(fsize, "%d", imageLen);
 					int len = sprintf(out, "IMAGE%c%s%c", DEL, fsize, DEL);
 					strncat(out, &base64_buffer[imageIndex], imageLen);
