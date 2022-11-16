@@ -11,6 +11,9 @@ I use [this](https://bulma.io/) open source framework.
 ![mqtt-image-view-1](https://user-images.githubusercontent.com/6020549/165009289-8ce9432c-619b-44b2-b741-29c91ae3cbc0.jpg)
 ![mqtt-image-view-2](https://user-images.githubusercontent.com/6020549/165009292-6a027230-079f-49fb-80fb-6816948c85f9.jpg)
 
+# Software requirements
+esp-idf v4.4/v5.0.   
+
 # Installation
 ```
 git clone https://github.com/nopnop2002/esp-idf-mqtt-image-client
