@@ -29,6 +29,12 @@
 
 #include "mqtt.h"
 
+#if (ESP_IDF_VERSION >= ESP_IDF_VERSION_VAL(5, 0, 0))
+#define sntp_setoperatingmode esp_sntp_setoperatingmode
+#define sntp_setservername esp_sntp_setservername
+#define sntp_init esp_sntp_init
+#endif
+
 static QueueHandle_t client_queue;
 MessageBufferHandle_t xMessageBufferMain; // To main message
 MessageBufferHandle_t xMessageBufferMqtt; // To mqtt message
