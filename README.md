@@ -19,7 +19,6 @@ esp-idf v4.4/v5.0.
 git clone https://github.com/nopnop2002/esp-idf-mqtt-image-client
 cd esp-idf-mqtt-image-client
 git clone https://github.com/Molorius/esp32-websocket components/websocket
-idf.py set-target {esp32/esp32s2/esp32s3/esp32c3}
 idf.py menuconfig
 idf.py flash monitor
 ```
