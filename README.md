@@ -30,11 +30,6 @@ idf.py flash monitor
 ![config-app-1](https://user-images.githubusercontent.com/6020549/165009560-cf56805d-c8a6-452b-9ae4-4422d9df3c4c.jpg)
 
 You can use the MDNS hostname instead of the IP address.   
-- esp-idf V4.3 or earlier   
- You will need to manually change the mDNS strict mode according to [this](https://github.com/espressif/esp-idf/issues/6190) instruction.   
-- esp-idf V4.4 or later  
- If you set CONFIG_MDNS_STRICT_MODE = y in sdkconfig.default, the firmware will be built with MDNS_STRICT_MODE = 1.
-
 ![config-app-2](https://user-images.githubusercontent.com/6020549/165009568-887efd6a-00d1-4ae4-ba65-07785e8e25b9.jpg)
 
 # How to use
