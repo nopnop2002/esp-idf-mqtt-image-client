@@ -12,7 +12,9 @@ I use [this](https://bulma.io/) open source framework.
 ![mqtt-image-view-2](https://user-images.githubusercontent.com/6020549/165009292-6a027230-079f-49fb-80fb-6816948c85f9.jpg)
 
 # Software requirements
-esp-idf v4.4/v5.0.   
+ESP-IDF V5.0 or later.   
+ESP-IDF V4.4 release branch reached EOL in July 2024.   
+ESP-IDF V5.1 is required when using ESP32-C6.   
 
 # Installation
 ```
