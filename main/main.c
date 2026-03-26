@@ -10,6 +10,7 @@
 #include <stdio.h>
 #include <inttypes.h>
 #include <string.h>
+#include <sys/stat.h>
 
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
